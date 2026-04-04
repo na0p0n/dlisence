@@ -1,6 +1,6 @@
-package jp.omutsulicense.backend
+package online.diaperlicense.backend
 
-import jp.omutsulicense.backend.config.AppProperties
+import online.diaperlicense.backend.config.AppProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication

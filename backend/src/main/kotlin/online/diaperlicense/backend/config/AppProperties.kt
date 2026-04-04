@@ -1,4 +1,4 @@
-package jp.omutsulicense.backend.config
+package online.diaperlicense.backend.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
