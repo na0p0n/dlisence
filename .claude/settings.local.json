@@ -5,7 +5,9 @@
       "Bash(git checkout:*)",
       "Bash(npm install:*)",
       "Bash(gh repo:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(gh pr:*)",
+      "Bash(./gradlew build:*)"
     ]
   }
 }
