@@ -1,0 +1,78 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - web
+      - api
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    environment:
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - API_BASE_URL=http://api:8080
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  api:
+    build: ./backend
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/omutsu
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+      - STORAGE_ENDPOINT=http://garage:3900
+      - STORAGE_REGION=garage
+      - STORAGE_ACCESS_KEY=${GARAGE_ACCESS_KEY}
+      - STORAGE_SECRET_KEY=${GARAGE_SECRET_KEY}
+      - STORAGE_BUCKET=${GARAGE_BUCKET:-icons}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=omutsu
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  garage:
+    image: dxflrs/garage:v1.0.1
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml
+      - garagedata:/var/lib/garage/data
+      - garagemeta:/var/lib/garage/meta
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  garagedata:
+  garagemeta:

@@ -12,6 +12,11 @@ frontend/out/
 .env.local
 .env.*.local
 !.env.example
+!.env.*.example
+
+# Let's Encrypt / certbot
+certbot/conf/
+certbot/www/
 
 # Build outputs
 frontend/build/
