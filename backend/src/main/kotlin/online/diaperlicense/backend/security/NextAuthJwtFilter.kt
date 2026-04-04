@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import online.diaperlicense.backend.config.AppProperties
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -15,6 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 class NextAuthJwtFilter(
     private val appProperties: AppProperties,
 ) : OncePerRequestFilter() {
+
+    private val log = LoggerFactory.getLogger(NextAuthJwtFilter::class.java)
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -39,10 +42,10 @@ class NextAuthJwtFilter(
                     SecurityContextHolder.getContext().authentication =
                         JwtAuthentication(userId)
                 }
-            } catch (_: JwtException) {
-                // 無効なトークン - 未認証のまま続行
-            } catch (_: IllegalArgumentException) {
-                // 不正な引数 - 未認証のまま続行
+            } catch (e: JwtException) {
+                log.warn("Invalid JWT token: {}", e.message)
+            } catch (e: IllegalArgumentException) {
+                log.warn("Invalid JWT argument: {}", e.message)
             }
         }
 
