@@ -41,6 +41,9 @@ dependencies {
     // Validation
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
+    // 本番 JSON 構造化ログ (prod プロファイル用)
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
+
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
