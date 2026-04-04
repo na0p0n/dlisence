@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/omutsu}
+    username: ${SPRING_DATASOURCE_USERNAME:omutsu}
+    password: ${SPRING_DATASOURCE_PASSWORD:omutsu}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+server:
+  port: 8080
+
+app:
+  nextauth-secret: ${NEXTAUTH_SECRET}
+  supabase-url: ${SUPABASE_URL:}
+  supabase-anon-key: ${SUPABASE_ANON_KEY:}
+  discord-bot-token: ${DISCORD_BOT_TOKEN:}
