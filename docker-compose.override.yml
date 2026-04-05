@@ -1,0 +1,13 @@
+# ローカル開発用オーバーライド
+# docker compose up で自動的に読み込まれる
+# 本番では docker-compose.yml のみを使用する
+services:
+  web:
+    build: ./frontend
+    image: null
+
+  api:
+    build: ./backend
+    image: null
+    environment:
+      - SPRING_PROFILES_ACTIVE=local

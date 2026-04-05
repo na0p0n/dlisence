@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   web:
-    build: ./frontend
+    image: ghcr.io/na0p0n/dlisence-web:latest
     environment:
       - NEXTAUTH_URL=${NEXTAUTH_URL}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
@@ -30,8 +30,9 @@ services:
     restart: unless-stopped
 
   api:
-    build: ./backend
+    image: ghcr.io/na0p0n/dlisence-api:latest
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/omutsu
       - SPRING_DATASOURCE_USERNAME=${DB_USER}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
