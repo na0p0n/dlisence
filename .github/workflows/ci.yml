@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Frontend: ビルド & 型チェック
+  # ─────────────────────────────────────────────
+  frontend:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # ビルド時に必要な最低限のダミー値
+          NEXTAUTH_SECRET: ci-dummy-secret-32chars-minimum!!
+          NEXTAUTH_URL: http://localhost:3000
+          DISCORD_CLIENT_ID: dummy
+          DISCORD_CLIENT_SECRET: dummy
+          GOOGLE_CLIENT_ID: dummy
+          GOOGLE_CLIENT_SECRET: dummy
+
+  # ─────────────────────────────────────────────
+  # Backend: ビルド & テスト
+  # ─────────────────────────────────────────────
+  backend:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: omutsu_test
+          POSTGRES_USER: omutsu
+          POSTGRES_PASSWORD: omutsu
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U omutsu"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Build & Test
+        run: ./gradlew build
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/omutsu_test
+          SPRING_DATASOURCE_USERNAME: omutsu
+          SPRING_DATASOURCE_PASSWORD: omutsu
+          NEXTAUTH_SECRET: ci-dummy-secret-32chars-minimum!!
