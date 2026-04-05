@@ -1,0 +1,13 @@
+# dev VPS 環境用オーバーライド
+# 使い方: docker compose -f docker-compose.yml -f docker-compose.dev.yml <command>
+#
+# 変更点:
+#   - nginx: ポートを 19080 (HTTP only) に変更
+#   - nginx: dev 用設定ファイルをマウント (SSL不要)
+#   - certbot 関連ボリュームを除外
+services:
+  nginx:
+    ports:
+      - "19080:80"
+    volumes:
+      - ./nginx/conf.d/dev.conf:/etc/nginx/conf.d/default.conf

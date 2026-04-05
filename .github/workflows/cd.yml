@@ -92,10 +92,10 @@ jobs:
 
             echo "${{ secrets.GITHUB_TOKEN }}" | \
               docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            docker compose pull web api
+            docker compose -f docker-compose.yml -f docker-compose.dev.yml pull web api
 
-            docker compose up -d --no-deps api
-            docker compose up -d --no-deps web
+            docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --no-deps api
+            docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --no-deps web
 
             docker image prune -f
 
