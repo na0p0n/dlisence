@@ -87,6 +87,7 @@ jobs:
           script: |
             set -e
             cd /opt/dlisence-dev
+            export IMAGE_TAG=dev
 
             git pull origin develop
 

@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   web:
-    image: ghcr.io/na0p0n/dlisence-web:latest
+    image: ghcr.io/na0p0n/dlisence-web:${IMAGE_TAG:-latest}
     environment:
       - NEXTAUTH_URL=${NEXTAUTH_URL}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   api:
-    image: ghcr.io/na0p0n/dlisence-api:latest
+    image: ghcr.io/na0p0n/dlisence-api:${IMAGE_TAG:-latest}
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/omutsu
