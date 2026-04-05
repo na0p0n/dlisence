@@ -18,19 +18,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- ─────────────────────────────────────────────────────────────
--- 免許番号自動採番: JP-YYYY-NNNN
--- ─────────────────────────────────────────────────────────────
-CREATE SEQUENCE license_seq START 1;
-
-CREATE OR REPLACE FUNCTION generate_license_no()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.license_no = 'JP-' || to_char(now(), 'YYYY') || '-'
-                   || lpad(nextval('license_seq')::text, 4, '0');
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+-- 免許番号はアプリケーション側で生成して INSERT する
+-- フォーマット: (国コード)-(13文字ランダム英数字)  例: JP-A3F7K2M9X1Q4R
 
 -- =============================================================
 -- 1. users（ユーザー）
@@ -120,10 +109,6 @@ CREATE TABLE licenses (
   created_at  timestamptz NOT NULL DEFAULT now(),
   updated_at  timestamptz NOT NULL DEFAULT now()
 );
-
-CREATE TRIGGER trg_licenses_no
-  BEFORE INSERT ON licenses
-  FOR EACH ROW EXECUTE FUNCTION generate_license_no();
 
 CREATE TRIGGER trg_licenses_updated_at
   BEFORE UPDATE ON licenses
